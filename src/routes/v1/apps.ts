@@ -1,24 +1,9 @@
 import {Hono} from "hono";
-import {apiKeyAuth} from "../middleware/auth";
-import { z } from 'zod';
-import { zValidator } from '@hono/zod-validator';
-import {getAppService} from "../../services/app-service";
+import {apiKeyAuth, appIdAuth} from "../middleware/auth";
 
 export const appsController = new Hono()
-  .get('/:id', apiKeyAuth, zValidator(
-    'param',
-    z.object({
-      id: z.string(),
-    }),
-  ), async (c) => {
-    const { user } = c.req.valid('header');
-    const appId = c.req.valid('param').id;
-
-    const app = await getAppService().findById(parseInt(appId));
-
-    if (!app || app.userId !== user.id) {
-      return c.json({ error: 'Not found' }, 404);
-    }
+  .get('/:id', apiKeyAuth, appIdAuth, async (c) => {
+    const { app } = c.req.valid('param');
 
     return c.json(app);
   },

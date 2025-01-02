@@ -9,6 +9,7 @@
     "db:migrations:prod": "wrangler d1 migrations apply stork --remote"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.4.2",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",
     "hono": "^4.6.15",

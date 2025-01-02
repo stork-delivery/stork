@@ -1,6 +1,7 @@
 name = "stork"
 main = "src/index.ts"
 compatibility_date = "2024-12-24"
+compatibility_flags = [ "nodejs_compat" ]
 
 [observability]
 enabled = true

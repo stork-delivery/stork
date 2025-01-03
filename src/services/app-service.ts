@@ -44,6 +44,11 @@ export type AppService = {
     appId: number,
     versionName: string,
   ) => Promise<Artifact[]>;
+  findVersionArtifact: (
+    appId: number,
+    versionName: string,
+    platform: string,
+  ) => Promise<Artifact | null>;
 };
 
 export function getAppService(): AppService {
@@ -149,6 +154,32 @@ function createAppService(): AppService {
 
       if (versions.length > 0) {
         return mapVersion(versions[0]);
+      }
+
+      return null;
+    },
+    findVersionArtifact: async (appId, versionName, platform) => {
+      const version = await service.findVersionByNameAndAppId(
+        versionName,
+        appId,
+      );
+
+      if (!version) {
+        return null;
+      }
+
+      const artifacts = await getDatabaseService()
+        .select()
+        .from(artifactsTable)
+        .where(
+          and(
+            eq(artifactsTable.versionId, version.id),
+            eq(artifactsTable.platform, platform),
+          ),
+        );
+
+      if (artifacts.length > 0) {
+        return mapArtifact(artifacts[0]);
       }
 
       return null;

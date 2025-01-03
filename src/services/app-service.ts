@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { getContext } from "hono/context-storage";
 import { AppContext, HonoContext } from "../types";
 import { getDatabaseService } from "./database-service";
-import { appsTable, versionsTable } from "../db/schema";
+import { appsTable, artifactsTable, versionsTable } from "../db/schema";
+import { getStorageService } from "./storage-service";
 
 export type App = {
   id: number;
@@ -16,13 +17,33 @@ export type Version = {
   version: string;
 };
 
+export type Artifact = {
+  id: number;
+  versionId: number;
+  name: string;
+  platform: string;
+};
+
 export type AppService = {
   createVersion: (opts: {
     appId: number;
     versionName: string;
   }) => Promise<void>;
+  createArtifact: (opts: {
+    versionId: number;
+    platform: string;
+    stream: ReadableStream;
+  }) => Promise<void>;
   findById: (id: number) => Promise<App | null>;
   listVersions: (appId: number) => Promise<Version[]>;
+  findVersionByNameAndAppId: (
+    versionName: string,
+    appId: number,
+  ) => Promise<Version | null>;
+  listVersionArtifacts: (
+    appId: number,
+    versionName: string,
+  ) => Promise<Artifact[]>;
 };
 
 export function getAppService(): AppService {
@@ -49,12 +70,32 @@ function mapApp(app: any): App {
   };
 }
 
-function createAppService(): AppService {
+function mapArtifact(artifact: any): Artifact {
   return {
+    id: artifact.id,
+    versionId: artifact.versionId,
+    name: artifact.name,
+    platform: artifact.platform,
+  };
+}
+
+function createAppService(): AppService {
+  const service: AppService = {
     createVersion: async ({ appId, versionName }) => {
       await getDatabaseService().insert(versionsTable).values({
         appId: appId,
         version: versionName,
+      });
+    },
+    createArtifact: async ({ versionId, platform, stream }) => {
+      const artifactKey = `${versionId}-${platform}`;
+
+      await getStorageService().put(artifactKey, stream);
+
+      await getDatabaseService().insert(artifactsTable).values({
+        versionId: versionId,
+        name: artifactKey,
+        platform: platform,
       });
     },
     findById: async (id) => {
@@ -77,5 +118,42 @@ function createAppService(): AppService {
 
       return versions.map(mapVersion);
     },
+    listVersionArtifacts: async (appId, versionName) => {
+      const databaseService = getDatabaseService();
+      const version = await service.findVersionByNameAndAppId(
+        versionName,
+        appId,
+      );
+
+      if (!version) {
+        return [];
+      }
+
+      const artifacts = await databaseService
+        .select()
+        .from(artifactsTable)
+        .where(eq(artifactsTable.versionId, version.id));
+
+      return artifacts.map(mapArtifact);
+    },
+    findVersionByNameAndAppId: async (versionName, appId) => {
+      const versions = await getDatabaseService()
+        .select()
+        .from(versionsTable)
+        .where(
+          and(
+            eq(versionsTable.version, versionName),
+            eq(versionsTable.appId, appId),
+          ),
+        );
+
+      if (versions.length > 0) {
+        return mapVersion(versions[0]);
+      }
+
+      return null;
+    },
   };
+
+  return service;
 }

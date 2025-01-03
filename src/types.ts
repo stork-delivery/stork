@@ -15,4 +15,5 @@ export type Variables = {
   appService: AppService;
   userService: UserService;
   databaseService: DrizzleD1Database<typeof schema>;
+  storageService: R2Bucket;
 };

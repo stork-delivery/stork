@@ -3,6 +3,7 @@ import { apiKeyAuth, appIdAuth } from "../middleware/auth";
 import { getAppService } from "../../services/app-service";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { artifactsController } from "./artifacts";
 
 export const versionsController = new Hono()
   .get("/", apiKeyAuth, appIdAuth, async (c) => {
@@ -31,4 +32,5 @@ export const versionsController = new Hono()
 
       return c.text("OK");
     },
-  );
+  )
+  .route("/:versionName/artifacts", artifactsController);

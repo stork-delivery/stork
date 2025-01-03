@@ -26,7 +26,6 @@ export const artifactsController = new Hono()
       c.req.param("platform"),
     );
 
-    console.log(artifact);
     if (!artifact) {
       return c.json({ error: "Not found" }, 404);
     }

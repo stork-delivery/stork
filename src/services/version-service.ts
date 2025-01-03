@@ -1,9 +1,9 @@
-import { eq } from 'drizzle-orm';
+import { eq } from "drizzle-orm";
 
-import { getContext } from 'hono/context-storage';
-import { AppContext, HonoContext } from '../types';
-import {getDatabaseService} from './database-service';
-import {usersTable} from '../db/schema';
+import { getContext } from "hono/context-storage";
+import { AppContext, HonoContext } from "../types";
+import { getDatabaseService } from "./database-service";
+import { usersTable } from "../db/schema";
 
 export type Version = {
   id: number;
@@ -11,15 +11,14 @@ export type Version = {
   version: string;
 };
 
-export type VersionService = {
-}
+export type VersionService = {};
 
 export function getVersionService(): VersionService {
   return getContext<HonoContext>().var.versionService;
 }
 
 export function setUserService(c: AppContext) {
-  c.set('userService', createUserService());
+  c.set("userService", createUserService());
 }
 
 function mapUser(user: any): User {
@@ -35,7 +34,7 @@ function createUserService(): UserService {
       const users = await getDatabaseService()
         .select()
         .from(usersTable)
-        .where(eq(usersTable.apiKey, apiKey))
+        .where(eq(usersTable.apiKey, apiKey));
 
       if (users.length > 0) {
         return mapUser(users[0]);
@@ -45,4 +44,3 @@ function createUserService(): UserService {
     },
   };
 }
-

@@ -6,7 +6,8 @@
     "types": "wrangler types",
     "db:generate": "bunx drizzle-kit generate --dialect sqlite --schema ./src/db/schema.ts",
     "db:migrations:local": "wrangler d1 migrations apply stork --local",
-    "db:migrations:prod": "wrangler d1 migrations apply stork --remote"
+    "db:migrations:prod": "wrangler d1 migrations apply stork --remote",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.2",
@@ -19,6 +20,7 @@
     "@cloudflare/workers-types": "^4.20241224.0",
     "@types/node": "^22.10.2",
     "drizzle-kit": "^0.30.1",
+    "prettier": "^3.4.2",
     "tsx": "^4.19.2",
     "wrangler": "^3.96.0"
   }

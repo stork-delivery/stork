@@ -1,4 +1,4 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const usersTable = sqliteTable("users", {
   id: int().primaryKey({ autoIncrement: true }),
@@ -12,6 +12,7 @@ export const appsTable = sqliteTable("apps", {
     .notNull()
     .references(() => usersTable.id),
   name: text().notNull(),
+  publicMetadata: integer({mode: 'boolean'}).notNull().default(false),
 });
 
 export const versionsTable = sqliteTable("versions", {

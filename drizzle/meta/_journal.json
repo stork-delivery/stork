@@ -8,6 +8,13 @@
       "when": 1735513120406,
       "tag": "0000_normal_stick",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1736262637367,
+      "tag": "0001_broad_major_mapleleaf",
+      "breakpoints": true
     }
   ]
 }

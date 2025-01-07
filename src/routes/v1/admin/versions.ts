@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { apiKeyAuth, appIdAuth } from "../middleware/auth";
-import { getAppService } from "../../services/app-service";
+import { apiKeyAuth, appIdAuth } from "../../middleware/auth";
+import { getAppService } from "../../../services/app-service";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { artifactsController } from "./artifacts";

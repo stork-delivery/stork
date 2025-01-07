@@ -1,11 +1,27 @@
-import { Hono } from "hono";
-import { apiKeyAuth, appIdAuth } from "../middleware/auth";
-import { versionsController } from "./versions";
+import {zValidator} from "@hono/zod-validator";
+import {Hono} from "hono";
+import {z} from "zod";
+import {getAppService} from "../../services/app-service";
 
 export const appsController = new Hono()
-  .get("/:id", apiKeyAuth, appIdAuth, async (c) => {
-    const { app } = c.req.valid("param");
+  .get('/:id', 
+    zValidator('param', z.object({
+      id: z.string().min(1),
+    },),),
+    async (c) => {
+      const appService = getAppService();
 
-    return c.json(app);
-  })
-  .route("/:id/versions", versionsController);
+      const app = await appService.findById(parseInt(c.req.param('id')));
+
+      if (!app || !app.publicMetadata) {
+        return c.notFound();
+      }
+
+      const versions = await appService.listVersions(app.id);
+
+      return c.json({
+        id: app.id,
+        name: app.name,
+        versions: versions.map((v) => v.version),
+      });
+  });

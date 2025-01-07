@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { apiKeyAuth, appIdAuth } from "../middleware/auth";
-import { getAppService } from "../../services/app-service";
-import { getStorageService } from "../../services/storage-service";
+import { apiKeyAuth, appIdAuth } from "../../middleware/auth";
+import { getAppService } from "../../../services/app-service";
+import { getStorageService } from "../../../services/storage-service";
 
 export const artifactsController = new Hono()
   .get("/", apiKeyAuth, appIdAuth, async (c) => {

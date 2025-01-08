@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0dcda710-b694-4ab4-a1f6-fb94412c966a",
-  "prevId": "32d6a63e-027f-41a1-91f3-93243c0c2ac5",
+  "id": "f315e9f6-019c-4260-82f4-a23a71a2a77b",
+  "prevId": "0dcda710-b694-4ab4-a1f6-fb94412c966a",
   "tables": {
     "apps": {
       "name": "apps",
@@ -166,6 +166,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "changelog": {
+          "name": "changelog",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
         }
       },
       "indexes": {},

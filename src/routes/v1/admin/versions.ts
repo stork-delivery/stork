@@ -19,15 +19,41 @@ export const versionsController = new Hono()
       "json",
       z.object({
         versionName: z.string().min(1),
+        changelog: z.optional(z.string()),
       }),
     ),
     async (c) => {
       const { app } = c.req.valid("param");
-      const { versionName } = c.req.valid("json");
+      const { versionName, changelog } = c.req.valid("json");
 
       await getAppService().createVersion({
         appId: app.id,
         versionName,
+        changelog: changelog || "",
+      });
+
+      return c.text("OK");
+    },
+  )
+  .put(
+    "/:versionName/changelog",
+    apiKeyAuth,
+    appIdAuth,
+    zValidator(
+      "json",
+      z.object({
+        changelog: z.string(),
+      }),
+    ),
+    async (c) => {
+      const versionName = c.req.param("versionName") as string;
+      const { app } = c.req.valid("param");
+      const { changelog } = c.req.valid("json");
+
+      await getAppService().updateVersionChangelog({
+        appId: app.id,
+        versionName: versionName,
+        changelog,
       });
 
       return c.text("OK");

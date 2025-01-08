@@ -1,0 +1,1 @@
+ALTER TABLE `versions` ADD `changelog` text DEFAULT '' NOT NULL;

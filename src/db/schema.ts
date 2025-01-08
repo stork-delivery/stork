@@ -12,7 +12,7 @@ export const appsTable = sqliteTable("apps", {
     .notNull()
     .references(() => usersTable.id),
   name: text().notNull(),
-  publicMetadata: integer({mode: 'boolean'}).notNull().default(false),
+  publicMetadata: integer({ mode: "boolean" }).notNull().default(false),
 });
 
 export const versionsTable = sqliteTable("versions", {
@@ -21,6 +21,7 @@ export const versionsTable = sqliteTable("versions", {
     .notNull()
     .references(() => appsTable.id),
   version: text().notNull(),
+  changelog: text().notNull().default(""),
 });
 
 export const artifactsTable = sqliteTable("artifacts", {

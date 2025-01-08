@@ -15,6 +15,13 @@
       "when": 1736262637367,
       "tag": "0001_broad_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1736347418594,
+      "tag": "0002_striped_avengers",
+      "breakpoints": true
     }
   ]
 }

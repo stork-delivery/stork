@@ -16,6 +16,7 @@ export type Version = {
   id: number;
   appId: number;
   version: string;
+  changelog: string;
 };
 
 export type Artifact = {
@@ -29,6 +30,12 @@ export type AppService = {
   createVersion: (opts: {
     appId: number;
     versionName: string;
+    changelog: string;
+  }) => Promise<void>;
+  updateVersionChangelog: (opts: {
+    appId: number;
+    versionName: string;
+    changelog: string;
   }) => Promise<void>;
   createArtifact: (opts: {
     versionId: number;
@@ -65,6 +72,7 @@ function mapVersion(version: any): Version {
     id: version.id,
     appId: version.appId,
     version: version.version,
+    changelog: version.changelog,
   };
 }
 
@@ -88,11 +96,23 @@ function mapArtifact(artifact: any): Artifact {
 
 function createAppService(): AppService {
   const service: AppService = {
-    createVersion: async ({ appId, versionName }) => {
+    createVersion: async ({ appId, versionName, changelog }) => {
       await getDatabaseService().insert(versionsTable).values({
         appId: appId,
         version: versionName,
+        changelog: changelog,
       });
+    },
+    updateVersionChangelog: async ({ appId, versionName, changelog }) => {
+      await getDatabaseService()
+        .update(versionsTable)
+        .set({ changelog: changelog })
+        .where(
+          and(
+            eq(versionsTable.appId, appId),
+            eq(versionsTable.version, versionName),
+          ),
+        );
     },
     createArtifact: async ({ versionId, platform, stream }) => {
       const artifactKey = `${versionId}-${platform}`;

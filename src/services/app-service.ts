@@ -61,6 +61,7 @@ export type AppService = {
     versionName: string,
     platform: string,
   ) => Promise<Artifact | null>;
+  listAll: (userId: number) => Promise<App[]>;
 };
 
 export function getAppService(): AppService {
@@ -245,6 +246,14 @@ function createAppService(): AppService {
       }
 
       return null;
+    },
+    listAll: async (userId: number) => {
+      const apps = await getDatabaseService()
+        .select()
+        .from(appsTable)
+        .where(eq(appsTable.userId, userId));
+
+      return apps.map(mapApp);
     },
   };
 

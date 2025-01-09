@@ -1,0 +1,1 @@
+DROP INDEX `versions_version_unique`;

@@ -20,7 +20,7 @@ export const versionsTable = sqliteTable("versions", {
   appId: int()
     .notNull()
     .references(() => appsTable.id),
-  version: text().unique().notNull(),
+  version: text().notNull(),
   changelog: text().notNull().default(""),
 });
 

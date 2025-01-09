@@ -38,10 +38,14 @@ export type AppService = {
     changelog: string;
   }) => Promise<void>;
   createArtifact: (opts: {
+    appId: number;
+    versionName: string;
     versionId: number;
     platform: string;
     stream: ReadableStream;
   }) => Promise<void>;
+  findArtifactByName: (name: string) => Promise<Artifact | null>;
+
   findById: (id: number) => Promise<App | null>;
   listVersions: (appId: number) => Promise<Version[]>;
   findVersionByNameAndAppId: (
@@ -126,8 +130,20 @@ function createAppService(): AppService {
           ),
         );
     },
-    createArtifact: async ({ versionId, platform, stream }) => {
-      const artifactKey = `${versionId}-${platform}`;
+    createArtifact: async ({
+      appId,
+      versionName,
+      versionId,
+      platform,
+      stream,
+    }) => {
+      const artifactKey = `${appId}-${versionName}-${platform}`;
+
+      const existingArtifact = await service.findArtifactByName(artifactKey);
+
+      if (existingArtifact != null) {
+        throw new Error("Artifact already exists");
+      }
 
       await getStorageService().put(artifactKey, stream);
 
@@ -136,6 +152,18 @@ function createAppService(): AppService {
         name: artifactKey,
         platform: platform,
       });
+    },
+    findArtifactByName: async (name) => {
+      const artifacts = await getDatabaseService()
+        .select()
+        .from(artifactsTable)
+        .where(eq(artifactsTable.name, name));
+
+      if (artifacts.length > 0) {
+        return mapArtifact(artifacts[0]);
+      }
+
+      return null;
     },
     findById: async (id) => {
       const apps = await getDatabaseService()

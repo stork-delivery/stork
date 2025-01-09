@@ -60,6 +60,8 @@ export const artifactsController = new Hono()
     }
 
     await appService.createArtifact({
+      appId: app.id,
+      versionName: version.version,
       versionId: version.id,
       platform,
       stream: c.req.raw.body!,

@@ -4,7 +4,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "types": "wrangler types",
-    "db:generate": "bunx drizzle-kit generate --dialect sqlite --schema ./src/db/schema.ts",
+    "db:generate": "npx drizzle-kit generate --dialect sqlite --schema ./src/db/schema.ts",
     "db:migrations:local": "wrangler d1 migrations apply stork --local",
     "db:migrations:prod": "wrangler d1 migrations apply stork --remote",
     "format:fix": "prettier --write ."

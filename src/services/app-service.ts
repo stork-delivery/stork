@@ -97,7 +97,19 @@ function mapArtifact(artifact: any): Artifact {
 function createAppService(): AppService {
   const service: AppService = {
     createVersion: async ({ appId, versionName, changelog }) => {
-      await getDatabaseService().insert(versionsTable).values({
+      const appService = getAppService();
+
+      const existingVersion = await appService.findVersionByNameAndAppId(
+        versionName,
+        appId,
+      );
+
+      if (existingVersion != null) {
+        throw new Error("Version already exists");
+      }
+
+      const dbService = getDatabaseService();
+      await dbService.insert(versionsTable).values({
         appId: appId,
         version: versionName,
         changelog: changelog,

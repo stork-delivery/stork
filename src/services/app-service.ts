@@ -62,6 +62,15 @@ export type AppService = {
     platform: string,
   ) => Promise<Artifact | null>;
   listAll: (userId: number) => Promise<App[]>;
+  createApp: (
+    userId: number,
+    data: { name: string; publicMetadata: boolean },
+  ) => Promise<App>;
+  updateApp: (
+    id: number,
+    data: { name?: string; publicMetadata?: boolean },
+  ) => Promise<App>;
+  removeApp: (id: number) => Promise<void>;
 };
 
 export function getAppService(): AppService {
@@ -254,6 +263,39 @@ function createAppService(): AppService {
         .where(eq(appsTable.userId, userId));
 
       return apps.map(mapApp);
+    },
+    async createApp(
+      userId: number,
+      data: { name: string; publicMetadata: boolean },
+    ): Promise<App> {
+      const db = getDatabaseService();
+      const [app] = await db
+        .insert(appsTable)
+        .values({
+          name: data.name,
+          userId: userId,
+          publicMetadata: data.publicMetadata,
+        })
+        .returning();
+      return mapApp(app);
+    },
+
+    async updateApp(
+      id: number,
+      data: { name?: string; publicMetadata?: boolean },
+    ): Promise<App> {
+      const db = getDatabaseService();
+      const [app] = await db
+        .update(appsTable)
+        .set(data)
+        .where(eq(appsTable.id, id))
+        .returning();
+      return mapApp(app);
+    },
+
+    async removeApp(id: number): Promise<void> {
+      const db = getDatabaseService();
+      await db.delete(appsTable).where(eq(appsTable.id, id));
     },
   };
 

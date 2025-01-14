@@ -25,6 +25,7 @@ export type Artifact = {
   versionId: number;
   name: string;
   platform: string;
+  fileName?: string;
 };
 
 export type AppService = {
@@ -46,6 +47,7 @@ export type AppService = {
     stream: ReadableStream;
   }) => Promise<void>;
   findArtifactByName: (name: string) => Promise<Artifact | null>;
+  updateArtifactFileName: (artifactId: number, fileName: string) => Promise<void>;
 
   findById: (id: number) => Promise<App | null>;
   listVersions: (appId: number) => Promise<Version[]>;
@@ -107,6 +109,7 @@ function mapArtifact(artifact: any): Artifact {
     versionId: artifact.versionId,
     name: artifact.name,
     platform: artifact.platform,
+    fileName: artifact.fileName,
   };
 }
 
@@ -299,6 +302,13 @@ function createAppService(): AppService {
     async removeApp(id: number): Promise<void> {
       const db = getDatabaseService();
       await db.delete(appsTable).where(eq(appsTable.id, id));
+    },
+    async updateArtifactFileName(artifactId: number, fileName: string) {
+      const db = getDatabaseService();
+      await db
+        .update(artifactsTable)
+        .set({ fileName })
+        .where(eq(artifactsTable.id, artifactId));
     },
   };
 

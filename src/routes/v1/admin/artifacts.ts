@@ -68,4 +68,28 @@ export const artifactsController = new Hono()
     });
 
     return c.text("OK");
+  })
+  .patch("/platforms/:platform", apiKeyAuth, appIdAuth, async (c) => {
+    const { app } = c.req.valid("param");
+    const { platform } = c.req.param();
+    const versionName = c.req.param("versionName") as string;
+
+    const appService = getAppService();
+    const artifact = await appService.findVersionArtifact(
+      app.id,
+      versionName,
+      platform,
+    );
+
+    if (!artifact) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    const body = await c.req.json();
+    if (!body.fileName || typeof body.fileName !== "string") {
+      return c.json({ error: "Invalid fileName" }, 400);
+    }
+
+    await appService.updateArtifactFileName(artifact.id, body.fileName);
+    return c.json({ success: true });
   });

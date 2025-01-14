@@ -32,4 +32,5 @@ export const artifactsTable = sqliteTable("artifacts", {
     .references(() => versionsTable.id),
   name: text().notNull(),
   platform: text().notNull(),
+  fileName: text(),
 });

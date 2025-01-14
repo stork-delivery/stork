@@ -22,6 +22,7 @@ export const versionsTable = sqliteTable("versions", {
     .references(() => appsTable.id),
   version: text().notNull(),
   changelog: text().notNull().default(""),
+  createdAt: integer({ mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
 });
 
 export const artifactsTable = sqliteTable("artifacts", {

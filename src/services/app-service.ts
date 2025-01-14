@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { getContext } from "hono/context-storage";
 import { AppContext, HonoContext } from "../types";
 import { getDatabaseService } from "./database-service";
@@ -17,6 +17,7 @@ export type Version = {
   appId: number;
   version: string;
   changelog: string;
+  createdAt: Date;
 };
 
 export type Artifact = {
@@ -87,6 +88,7 @@ function mapVersion(version: any): Version {
     appId: version.appId,
     version: version.version,
     changelog: version.changelog,
+    createdAt: version.createdAt,
   };
 }
 
@@ -191,7 +193,8 @@ function createAppService(): AppService {
       const versions = await getDatabaseService()
         .select()
         .from(versionsTable)
-        .where(eq(versionsTable.appId, appId));
+        .where(eq(versionsTable.appId, appId))
+        .orderBy(desc(versionsTable.createdAt));
 
       return versions.map(mapVersion);
     },

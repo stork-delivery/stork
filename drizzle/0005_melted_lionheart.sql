@@ -1,0 +1,1 @@
+ALTER TABLE `versions` ADD `createdAt` integer DEFAULT 0 NOT NULL;

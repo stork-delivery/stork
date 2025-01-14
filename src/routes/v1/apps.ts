@@ -21,10 +21,12 @@ export const appsController = new Hono().get(
     }
 
     const versions = await appService.listVersions(app.id);
+    const lastVersion = versions.length > 0 ? versions[0].version : null;
 
     return c.json({
       id: app.id,
       name: app.name,
+      lastVersion,
       versions: versions.map((v) => v.version),
     });
   },

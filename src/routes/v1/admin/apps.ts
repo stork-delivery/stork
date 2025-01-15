@@ -72,4 +72,16 @@ export const appsController = new Hono()
       return c.json(itchIOData);
     },
   )
+  .get("/:id/itchio", apiKeyAuth, appIdAuth, async (c) => {
+    const appService = getAppService();
+    const { app } = c.req.valid("param");
+    
+    const itchIOData = await appService.findItchIOData(app.id);
+    
+    if (!itchIOData) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    return c.json(itchIOData);
+  })
   .route("/:id/versions", versionsController);

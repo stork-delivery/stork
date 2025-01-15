@@ -65,6 +65,7 @@ export type AppService = {
     fileName: string,
   ) => Promise<void>;
   upsertItchIOData: (data: Omit<ItchIOData, "id">) => Promise<ItchIOData>;
+  findItchIOData: (appId: number) => Promise<ItchIOData | null>;
 
   findById: (id: number) => Promise<App | null>;
   listVersions: (appId: number) => Promise<Version[]>;
@@ -358,6 +359,24 @@ function createAppService(): AppService {
       return {
         id: result[0].id,
         ...data,
+      };
+    },
+    async findItchIOData(appId: number) {
+      const db = getDatabaseService();
+      const data = await db.query.itchIOTable.findFirst({
+        where: eq(itchIOTable.appId, appId),
+      });
+
+      if (!data) {
+        return null;
+      }
+
+      return {
+        id: data.id,
+        appId: data.appId,
+        buttlerKey: data.buttlerKey,
+        itchIOUsername: data.itchIOUsername,
+        itchIOGameName: data.itchIOGameName,
       };
     },
   };

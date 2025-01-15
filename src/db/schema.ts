@@ -22,7 +22,9 @@ export const versionsTable = sqliteTable("versions", {
     .references(() => appsTable.id),
   version: text().notNull(),
   changelog: text().notNull().default(""),
-  createdAt: integer({ mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+  createdAt: integer({ mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 
 export const artifactsTable = sqliteTable("artifacts", {
@@ -32,4 +34,15 @@ export const artifactsTable = sqliteTable("artifacts", {
     .references(() => versionsTable.id),
   name: text().notNull(),
   platform: text().notNull(),
+  fileName: text(),
+});
+
+export const itchIOTable = sqliteTable("itchIO", {
+  id: int().primaryKey({ autoIncrement: true }),
+  appId: int()
+    .notNull()
+    .references(() => appsTable.id),
+  buttlerKey: text().notNull(),
+  itchIOUsername: text().notNull(),
+  itchIOGameName: text().notNull(),
 });

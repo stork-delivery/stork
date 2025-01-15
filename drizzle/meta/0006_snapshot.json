@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4b64040d-fe06-4f47-b23c-0c31f67d5558",
-  "prevId": "d852dae8-5fbe-45fb-9b6e-2ccf5531a20c",
+  "id": "7812e881-17ca-4ddd-b12d-0758f630b148",
+  "prevId": "4b64040d-fe06-4f47-b23c-0c31f67d5558",
   "tables": {
     "apps": {
       "name": "apps",
@@ -82,6 +82,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "fileName": {
+          "name": "fileName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },

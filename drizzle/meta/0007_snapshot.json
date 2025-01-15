@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4b64040d-fe06-4f47-b23c-0c31f67d5558",
-  "prevId": "d852dae8-5fbe-45fb-9b6e-2ccf5531a20c",
+  "id": "51a261fb-716b-4752-ba0d-0435702804c7",
+  "prevId": "7812e881-17ca-4ddd-b12d-0758f630b148",
   "tables": {
     "apps": {
       "name": "apps",
@@ -83,6 +83,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "fileName": {
+          "name": "fileName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -92,6 +99,61 @@
           "tableFrom": "artifacts",
           "tableTo": "versions",
           "columnsFrom": ["versionId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "itchIO": {
+      "name": "itchIO",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "appId": {
+          "name": "appId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "buttlerKey": {
+          "name": "buttlerKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "itchIOUsername": {
+          "name": "itchIOUsername",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "itchIOGameName": {
+          "name": "itchIOGameName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "itchIO_appId_apps_id_fk": {
+          "name": "itchIO_appId_apps_id_fk",
+          "tableFrom": "itchIO",
+          "tableTo": "apps",
+          "columnsFrom": ["appId"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"

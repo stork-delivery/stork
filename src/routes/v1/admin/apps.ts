@@ -47,4 +47,29 @@ export const appsController = new Hono()
     await appService.removeApp(app.id);
     return c.body(null, { status: 204 });
   })
+  .put(
+    "/:id/itchio",
+    apiKeyAuth,
+    appIdAuth,
+    zValidator(
+      "json",
+      z.object({
+        buttlerKey: z.string().min(1),
+        itchIOUsername: z.string().min(1),
+        itchIOGameName: z.string().min(1),
+      }),
+    ),
+    async (c) => {
+      const appService = getAppService();
+      const { app } = c.req.valid("param");
+      const data = c.req.valid("json");
+
+      const itchIOData = await appService.upsertItchIOData({
+        appId: app.id,
+        ...data,
+      });
+
+      return c.json(itchIOData);
+    },
+  )
   .route("/:id/versions", versionsController);

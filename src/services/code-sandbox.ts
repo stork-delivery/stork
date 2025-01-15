@@ -1,6 +1,6 @@
-import {getContext} from "hono/context-storage";
-import {AppContext, HonoContext} from "../types";
-import {CodeSandbox} from "@codesandbox/sdk";
+import { getContext } from "hono/context-storage";
+import { AppContext, HonoContext } from "../types";
+import { CodeSandbox } from "@codesandbox/sdk";
 
 export type ExecutionStep = {
   command: string;
@@ -15,7 +15,7 @@ export type ExecutionResult = {
 
 export type CodeSandboxService = {
   run: (commands: Array<string>) => Promise<ExecutionResult>;
-}
+};
 
 export function getCodeSandboxService(): CodeSandboxService {
   return getContext<HonoContext>().var.codesandboxService;
@@ -30,7 +30,6 @@ function createCodeSandboxService(apiKey: string): CodeSandboxService {
 
   const service: CodeSandboxService = {
     run: async (commands) => {
-
       const steps: Array<ExecutionStep> = [];
 
       const sandbox = await sdk.sandbox.create();
@@ -56,10 +55,11 @@ function createCodeSandboxService(apiKey: string): CodeSandboxService {
         steps,
       };
 
+      sandbox.shutdown();
+
       return result;
     },
   };
 
   return service;
 }
-

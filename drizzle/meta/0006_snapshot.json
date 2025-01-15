@@ -43,12 +43,8 @@
           "name": "apps_userId_users_id_fk",
           "tableFrom": "apps",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -102,12 +98,8 @@
           "name": "artifacts_versionId_versions_id_fk",
           "tableFrom": "artifacts",
           "tableTo": "versions",
-          "columnsFrom": [
-            "versionId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["versionId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -144,16 +136,12 @@
       "indexes": {
         "users_username_unique": {
           "name": "users_username_unique",
-          "columns": [
-            "username"
-          ],
+          "columns": ["username"],
           "isUnique": true
         },
         "users_apiKey_unique": {
           "name": "users_apiKey_unique",
-          "columns": [
-            "apiKey"
-          ],
+          "columns": ["apiKey"],
           "isUnique": true
         }
       },
@@ -208,12 +196,8 @@
           "name": "versions_appId_apps_id_fk",
           "tableFrom": "versions",
           "tableTo": "apps",
-          "columnsFrom": [
-            "appId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["appId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

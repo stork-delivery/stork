@@ -2,7 +2,12 @@ import { eq, and, desc } from "drizzle-orm";
 import { getContext } from "hono/context-storage";
 import { AppContext, HonoContext } from "../types";
 import { getDatabaseService } from "./database-service";
-import { appsTable, artifactsTable, versionsTable } from "../db/schema";
+import {
+  appsTable,
+  artifactsTable,
+  versionsTable,
+  itchIOTable,
+} from "../db/schema";
 import { getStorageService } from "./storage-service";
 
 export type App = {
@@ -28,6 +33,14 @@ export type Artifact = {
   fileName?: string;
 };
 
+export type ItchIOData = {
+  id: number;
+  appId: number;
+  buttlerKey: string;
+  itchIOUsername: string;
+  itchIOGameName: string;
+};
+
 export type AppService = {
   createVersion: (opts: {
     appId: number;
@@ -47,7 +60,11 @@ export type AppService = {
     stream: ReadableStream;
   }) => Promise<void>;
   findArtifactByName: (name: string) => Promise<Artifact | null>;
-  updateArtifactFileName: (artifactId: number, fileName: string) => Promise<void>;
+  updateArtifactFileName: (
+    artifactId: number,
+    fileName: string,
+  ) => Promise<void>;
+  upsertItchIOData: (data: Omit<ItchIOData, "id">) => Promise<ItchIOData>;
 
   findById: (id: number) => Promise<App | null>;
   listVersions: (appId: number) => Promise<Version[]>;
@@ -309,6 +326,39 @@ function createAppService(): AppService {
         .update(artifactsTable)
         .set({ fileName })
         .where(eq(artifactsTable.id, artifactId));
+    },
+    async upsertItchIOData(data: Omit<ItchIOData, "id">) {
+      const db = getDatabaseService();
+
+      const existing = await db.query.itchIOTable.findFirst({
+        where: eq(itchIOTable.appId, data.appId),
+      });
+
+      if (existing) {
+        await db
+          .update(itchIOTable)
+          .set({
+            buttlerKey: data.buttlerKey,
+            itchIOUsername: data.itchIOUsername,
+            itchIOGameName: data.itchIOGameName,
+          })
+          .where(eq(itchIOTable.id, existing.id));
+
+        return {
+          id: existing.id,
+          ...data,
+        };
+      }
+
+      const result = await db
+        .insert(itchIOTable)
+        .values(data)
+        .returning({ id: itchIOTable.id });
+
+      return {
+        id: result[0].id,
+        ...data,
+      };
     },
   };
 

@@ -71,7 +71,8 @@ export const artifactsController = new Hono()
 
     return c.text("OK");
   })
-  .patch("/platforms/:platform",
+  .patch(
+    "/platforms/:platform",
     apiKeyAuth,
     appIdAuth,
     zValidator(
@@ -100,4 +101,5 @@ export const artifactsController = new Hono()
 
       await appService.updateArtifactFileName(artifact.id, body.fileName);
       return c.json({ success: true });
-    });
+    },
+  );

@@ -15,6 +15,7 @@ export type App = {
   name: string;
   userId: number;
   publicMetadata: boolean;
+  publicDownload: boolean;
 };
 
 export type Version = {
@@ -118,6 +119,7 @@ function mapApp(app: any): App {
     name: app.name,
     userId: app.userId,
     publicMetadata: app.publicMetadata,
+    publicDownload: app.publicDownload,
   };
 }
 

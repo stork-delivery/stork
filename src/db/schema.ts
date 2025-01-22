@@ -13,6 +13,7 @@ export const appsTable = sqliteTable("apps", {
     .references(() => usersTable.id),
   name: text().notNull(),
   publicMetadata: integer({ mode: "boolean" }).notNull().default(false),
+  publicDownload: integer({ mode: "boolean" }).notNull().default(false),
 });
 
 export const versionsTable = sqliteTable("versions", {

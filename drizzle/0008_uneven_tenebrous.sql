@@ -1,0 +1,1 @@
+ALTER TABLE `apps` ADD `publicDownload` integer DEFAULT false NOT NULL;

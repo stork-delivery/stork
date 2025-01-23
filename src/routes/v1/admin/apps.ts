@@ -4,6 +4,7 @@ import { versionsController } from "./versions";
 import { getAppService } from "../../../services/app-service";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { cors } from "hono/cors";
 
 const appSchema = z.object({
   name: z.string().min(1),

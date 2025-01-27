@@ -126,5 +126,6 @@ export const artifactsController = new Hono()
         version,
         platform,
       });
+      return c.json({ success: true });
     },
   );

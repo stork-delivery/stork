@@ -47,3 +47,30 @@ export const itchIOTable = sqliteTable("itchIO", {
   itchIOUsername: text().notNull(),
   itchIOGameName: text().notNull(),
 });
+
+export const deploysTable = sqliteTable("deploys", {
+  id: int().primaryKey({ autoIncrement: true }),
+  appId: int()
+    .notNull()
+    .references(() => appsTable.id),
+  versionId: int()
+    .notNull()
+    .references(() => versionsTable.id),
+  status: text().notNull(),
+  createdAt: integer({ mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  targetService: text().notNull(),
+  platform: text().notNull(),
+});
+
+export const deployLogsTable = sqliteTable("deployLogs", {
+  id: int().primaryKey({ autoIncrement: true }),
+  deployId: int()
+    .notNull()
+    .references(() => deploysTable.id),
+  log: text().notNull(),
+  createdAt: integer({ mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});

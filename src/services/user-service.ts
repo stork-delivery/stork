@@ -12,6 +12,7 @@ export type User = {
 
 export type UserService = {
   findByApiKey: (apiKey: string) => Promise<User | null>;
+  getUserApiKey: (userId: number) => Promise<string | null>;
 };
 
 export function getUserService(): UserService {
@@ -42,6 +43,18 @@ function createUserService(): UserService {
       }
 
       return null;
+    },
+    getUserApiKey: async (userId) => {
+      const users = await getDatabaseService()
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.id, userId));  
+
+      if (users.length > 0) {
+        return users[0].apiKey;
+      } else {
+        return null;
+      }
     },
   };
 }

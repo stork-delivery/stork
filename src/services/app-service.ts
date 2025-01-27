@@ -7,6 +7,8 @@ import {
   artifactsTable,
   versionsTable,
   itchIOTable,
+  deploysTable,
+  deployLogsTable,
 } from "../db/schema";
 import { getStorageService } from "./storage-service";
 
@@ -40,6 +42,23 @@ export type ItchIOData = {
   buttlerKey: string;
   itchIOUsername: string;
   itchIOGameName: string;
+};
+
+export type Deploy = {
+  id: number;
+  appId: number;
+  versionId: number;
+  status: string;
+  createdAt: Date;
+  targetService: string;
+  platform: string;
+};
+
+export type DeployLog = {
+  id: number;
+  deployId: number;
+  log: string;
+  createdAt: Date;
 };
 
 export type AppService = {
@@ -93,6 +112,23 @@ export type AppService = {
     data: { name?: string; publicMetadata?: boolean },
   ) => Promise<App>;
   removeApp: (id: number) => Promise<void>;
+  createDeploy: (opts: {
+    appId: number;
+    versionId: number;
+    targetService: string;
+    platform: string;
+    status: string;
+  }) => Promise<Deploy>;
+  findDeployByAppIdAndVersionId: (
+    appId: number,
+    versionId: number,
+  ) => Promise<Deploy | null>;
+  listDeploys: (appId: number) => Promise<Deploy[]>;
+  createDeployLog: (opts: {
+    deployId: number;
+    log: string;
+  }) => Promise<void>;
+  listDeployLogs: (deployId: number) => Promise<DeployLog[]>;
 };
 
 export function getAppService(): AppService {
@@ -130,6 +166,27 @@ function mapArtifact(artifact: any): Artifact {
     name: artifact.name,
     platform: artifact.platform,
     fileName: artifact.fileName,
+  };
+}
+
+function mapDeploy(deploy: any): Deploy {
+  return {
+    id: deploy.id,
+    appId: deploy.appId,
+    versionId: deploy.versionId,
+    status: deploy.status,
+    createdAt: deploy.createdAt,
+    targetService: deploy.targetService,
+    platform: deploy.platform,
+  };
+}
+
+function mapDeployLog(log: any): DeployLog {
+  return {
+    id: log.id,
+    deployId: log.deployId,
+    log: log.log,
+    createdAt: log.createdAt,
   };
 }
 
@@ -380,6 +437,66 @@ function createAppService(): AppService {
         itchIOUsername: data.itchIOUsername,
         itchIOGameName: data.itchIOGameName,
       };
+    },
+    findDeployByAppIdAndVersionId: async (appId: number, versionId: number) => {
+      const db = getDatabaseService();
+      const data = await db.query.deploysTable.findFirst({
+        where: and(
+          eq(deploysTable.appId, appId),
+          eq(deploysTable.versionId, versionId),
+        ),
+      });
+      if (!data) {
+        return null;
+      }
+      return mapDeploy(data);
+    },
+    async createDeploy({
+      appId,
+      versionId,
+      targetService,
+      platform,
+      status,
+    }: {
+      appId: number;
+      versionId: number;
+      targetService: string;
+      status: string;
+      platform: string;
+    }) {
+      const db = getDatabaseService();
+      const [deploy] = await db
+        .insert(deploysTable)
+        .values({ appId, versionId, targetService, platform, status })
+        .returning();
+      return mapDeploy(deploy);
+    },
+    async listDeploys(appId: number) {
+      const db = getDatabaseService();
+      const deploys = await db.query.deploysTable.findMany({
+        where: eq(deploysTable.appId, appId),
+      });
+      return deploys.map(mapDeploy);
+    },
+    async createDeployLog({
+      deployId,
+      log,
+    }: {
+      deployId: number;
+      log: string;
+    }) {
+      const db = getDatabaseService();
+      await db.insert(deployLogsTable).values({
+        deployId,
+        log,
+      });
+    },
+    async listDeployLogs(deployId: number) {
+      const db = getDatabaseService();
+      const logs = await db.query.deployLogsTable.findMany({
+        where: eq(deployLogsTable.deployId, deployId),
+      });
+      return logs.map(mapDeployLog);
     },
   };
 

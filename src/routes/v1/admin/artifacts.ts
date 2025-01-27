@@ -4,6 +4,7 @@ import { getAppService } from "../../../services/app-service";
 import { getStorageService } from "../../../services/storage-service";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { getItchService } from "../../../services/itch-service";
 
 export const artifactsController = new Hono()
   .get("/", apiKeyAuth, appIdAuth, async (c) => {
@@ -101,5 +102,29 @@ export const artifactsController = new Hono()
 
       await appService.updateArtifactFileName(artifact.id, body.fileName);
       return c.json({ success: true });
+    },
+  )
+  .post(
+    "/platforms/:platform/itchio",
+    apiKeyAuth,
+    appIdAuth,
+    async (c) => {
+      const { app } = c.req.valid("param");
+      const { platform } = c.req.param();
+      const versionName = c.req.param("versionName") as string;
+
+      const appService = getAppService();
+      const version = await appService.findVersionByNameAndAppId(versionName, app.id);
+      const itchService = getItchService();
+
+      if (!version) {
+        return c.json({ error: "Not found" }, 404);
+      }
+
+      itchService.deployToItch({
+        app,
+        version,
+        platform,
+      });
     },
   );

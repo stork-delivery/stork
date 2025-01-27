@@ -12,9 +12,7 @@ export const apiKeyAuth = validator("header", async (headers, c) => {
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    console.log("a");
     const user = await getUserService().findByApiKey(apiKey);
-    console.log("b", user);
 
     if (user) {
       return { user };

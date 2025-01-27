@@ -121,7 +121,7 @@ export const artifactsController = new Hono()
         return c.json({ error: "Not found" }, 404);
       }
 
-      itchService.deployToItch({
+      await itchService.deployToItch({
         app,
         version,
         platform,

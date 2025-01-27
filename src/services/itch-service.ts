@@ -54,7 +54,7 @@ function createItchService(): ItchService {
         "unzip butler.zip",
         "chmod +x butler",
         "./butler -V",
-        `curl -L -o ${filename} H "Authorization: Bearer ${apiKey}" https://stork.erickzanardoo.workers.dev/v1/admin/apps/${app.id}/versions/${version.version}/platforms/${platform}/download`,
+        `curl -L -o ${filename} H "Authorization: Bearer ${apiKey}" https://stork.erickzanardoo.workers.dev/v1/admin/apps/${app.id}/versions/${version.version}/artifacts/platforms/${platform}/download`,
         `./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${version.version}`,
       ]);
 

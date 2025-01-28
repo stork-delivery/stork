@@ -50,6 +50,8 @@ function createItchService(): ItchService {
       const codeSandboxService = getCodeSandboxService();
 
       console.log('Running deploy on CS');
+      const pushCommand = `./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${platform}`;
+      console.log('Will run push command:', pushCommand);
       const result = await codeSandboxService.run([
         "curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default",
         "unzip butler.zip",
@@ -57,7 +59,7 @@ function createItchService(): ItchService {
         "./butler -V",
         `curl -L -o ${filename} -H "Authorization: Bearer ${apiKey}" https://stork.erickzanardoo.workers.dev/v1/admin/apps/${app.id}/versions/${version.version}/artifacts/platforms/${platform}/download`,
         'ls',
-        //`./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${version.version}`,
+        pushCommand,
       ]);
       console.log('Execution complete');
 

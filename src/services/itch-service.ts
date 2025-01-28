@@ -50,8 +50,7 @@ function createItchService(): ItchService {
       const codeSandboxService = getCodeSandboxService();
 
       console.log('Running deploy on CS');
-      const pushCommand = `./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${platform}`;
-      console.log('Will run push command:', pushCommand);
+      const pushCommand = `BUTLER_API_KEY=${itchIOData.buttlerKey} ./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${platform}`;
       const result = await codeSandboxService.run([
         "curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default",
         "unzip butler.zip",

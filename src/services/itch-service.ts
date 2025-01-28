@@ -49,14 +49,17 @@ function createItchService(): ItchService {
 
       const codeSandboxService = getCodeSandboxService();
 
+      console.log('Running deploy on CS');
       const result = await codeSandboxService.run([
         "curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default",
         "unzip butler.zip",
         "chmod +x butler",
         "./butler -V",
         `curl -L -o ${filename} -H "Authorization: Bearer ${apiKey}" https://stork.erickzanardoo.workers.dev/v1/admin/apps/${app.id}/versions/${version.version}/artifacts/platforms/${platform}/download`,
-        `./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${version.version}`,
+        'ls',
+        //`./butler push ${filename} ${itchIOData.itchIOUsername}/${itchIOData.itchIOGameName}:${version.version}`,
       ]);
+      console.log('Execution complete');
 
       const deploy = await appService.createDeploy({
         appId: app.id,

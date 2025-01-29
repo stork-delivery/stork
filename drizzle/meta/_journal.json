@@ -71,6 +71,13 @@
       "when": 1738015287543,
       "tag": "0009_clear_mystique",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1738184472802,
+      "tag": "0010_strange_mad_thinker",
+      "breakpoints": true
     }
   ]
 }

@@ -74,3 +74,15 @@ export const deployLogsTable = sqliteTable("deployLogs", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const newsTable = sqliteTable("news", {
+  id: int().primaryKey({ autoIncrement: true }),
+  title: text().notNull(),
+  appId: int()
+    .notNull()
+    .references(() => appsTable.id),
+  content: text().notNull(),
+  createdAt: integer({ mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});

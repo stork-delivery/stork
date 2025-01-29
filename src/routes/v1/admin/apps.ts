@@ -5,6 +5,7 @@ import { getAppService } from "../../../services/app-service";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { cors } from "hono/cors";
+import { newsController } from "./news";
 
 const appSchema = z.object({
   name: z.string().min(1),
@@ -85,4 +86,5 @@ export const appsController = new Hono()
 
     return c.json(itchIOData);
   })
-  .route("/:id/versions", versionsController);
+  .route("/:id/versions", versionsController)
+  .route("/:id/news", newsController);

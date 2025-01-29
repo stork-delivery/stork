@@ -9,6 +9,7 @@ import {
   itchIOTable,
   deploysTable,
   deployLogsTable,
+  newsTable,
 } from "../db/schema";
 import { getStorageService } from "./storage-service";
 
@@ -18,6 +19,14 @@ export type App = {
   userId: number;
   publicMetadata: boolean;
   publicDownload: boolean;
+};
+
+export type AppNews = {
+  id: number;
+  title: string;
+  appId: number;
+  content: string;
+  createdAt: Date;
 };
 
 export type Version = {
@@ -62,6 +71,20 @@ export type DeployLog = {
 };
 
 export type AppService = {
+
+  createAppNews: (opts: {
+    title: string;
+    appId: number;
+    content: string;
+  }) => Promise<AppNews>;
+  updateAppNews: (opts: {
+    id: number;
+    title: string;
+    content: string;
+    appId: number
+  }) => Promise<AppNews>;
+  getAppNews: (opts: { id: number, appId: number }) => Promise<AppNews | null>;
+  listAppNews: (opts: { appId: number, page: number, perPage: number }) => Promise<AppNews[]>;
   createVersion: (opts: {
     appId: number;
     versionName: string;
@@ -159,6 +182,16 @@ function mapApp(app: any): App {
   };
 }
 
+function mapNews(news: any): AppNews {
+  return {
+    id: news.id,
+    title: news.title,
+    appId: news.appId,
+    content: news.content,
+    createdAt: news.createdAt,
+  };
+}
+
 function mapArtifact(artifact: any): Artifact {
   return {
     id: artifact.id,
@@ -210,6 +243,54 @@ function createAppService(): AppService {
         version: versionName,
         changelog: changelog,
       });
+    },
+    createAppNews: async ({ title, appId, content }) => {
+      const dbService = getDatabaseService();
+      const [news] = await dbService.insert(newsTable).values({
+        title,
+        appId,
+        content,
+      }).returning();
+      return mapNews(news);
+    },
+    listAppNews: async ({ appId, page, perPage }) => {
+      const dbService = getDatabaseService();
+      const news = await dbService
+        .select()
+        .from(newsTable)
+        .where(eq(newsTable.appId, appId))
+        .orderBy(desc(newsTable.createdAt))
+        .limit(perPage)
+        .offset((page - 1) * perPage);
+
+      return news.map(mapNews);
+    },
+    getAppNews: async ({ id, appId }) => {
+      const dbService = getDatabaseService();
+      const news = await dbService.select().from(newsTable).where(
+        and(
+          eq(newsTable.id, id),
+          eq(newsTable.appId, appId)
+        ),
+      );
+      if (news.length === 0) {
+        return null;
+      }
+      return mapNews(news[0]);
+    },
+    updateAppNews: async ({ id, title, content, appId }) => {
+      const dbService = getDatabaseService();
+      const [news] = await dbService
+        .update(newsTable)
+        .set({ title, content })
+        .where(
+          and(
+            eq(newsTable.id, id),
+            eq(newsTable.appId, appId),
+          ),)
+        .returning();
+
+      return mapNews(news);
     },
     updateVersionChangelog: async ({ appId, versionName, changelog }) => {
       await getDatabaseService()

@@ -81,4 +81,41 @@ export const appsController = new Hono().get(
 
     return c.body(object.body, { headers });
   }
-);  
+).get('/:id/news', zValidator("query", z.object({ page: z.string(), perPage: z.string() })), zValidator(
+  'param',
+  z.object({
+    id: z.string().min(1),
+  }),
+), async (c) => {
+  const appService = getAppService();
+  const { id } = c.req.valid('param');
+  const { page, perPage } = c.req.valid('query');
+
+  const app = await appService.findById(parseInt(id));
+
+  if (!app) {
+    return c.notFound();
+  }
+
+  const news = await appService.listAppNews({ appId: app.id, page: parseInt(page), perPage: parseInt(perPage) });
+
+  return c.json(news);
+}).get('/:id/news/:id', zValidator("param", z.object({ id: z.string().min(1) })), zValidator(
+  'param',
+  z.object({
+    id: z.string().min(1),
+  }),
+), async (c) => {
+  const appService = getAppService();
+  const { id } = c.req.valid('param');
+
+  const app = await appService.findById(parseInt(id));  
+
+  if (!app) {
+    return c.notFound();
+  }
+
+  const news = await appService.getAppNews({ id: parseInt(id), appId: app.id });  
+
+  return c.json(news);  
+});  
